@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Les Saveurs du Maghreb - Restaurant Maghrébin à Nancy | Couscous & Tajines</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'brand-maroon': '#4A0E15', // The deep maroon from reference image
+              'brand-maroon-dark': '#2D060A', // Darker shade for depth
+              'brand-cream': '#F5E6D3', // The cream/beige from reference image
+              'brand-gold': '#C5A059', // Antique gold
+              'royal-gold': '#C5A059', // Kept for compatibility
+              'royal-dark': '#4A0E15', // Mapped to maroon for compatibility
+              'spicy-orange': '#C2410C',
+            },
+            fontFamily: {
+              sans: ['Lato', 'sans-serif'],
+              serif: ['Amiri', 'serif'],
+              display: ['Cinzel', 'serif'],
+            },
+            backgroundImage: {
+              // Abstract Calligraphy Strokes (Inspired by Tubaa Kabab packaging)
+              'calligraphy-pattern': "url(\"data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M200 400c110.457 0 200-89.543 200-200S310.457 0 200 0 0 89.543 0 200s89.543 200 200 200zm0-50c-82.843 0-150-67.157-150-150S117.157 50 200 50s150 67.157 150 150-67.157 150-150 150z' stroke='%23F5E6D3' stroke-width='2' opacity='0.05'/%3E%3Cpath d='M400 400c0-110.457-89.543-200-200-200S0 289.543 0 400h400z' fill='%23F5E6D3' opacity='0.03'/%3E%3Cpath d='M200 200C89.543 200 0 110.457 0 0h400c0 110.457-89.543 200-200 200z' fill='%23F5E6D3' opacity='0.03'/%3E%3C/g%3E%3C/svg%3E\")",
+              'paper-texture': "url(\"data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E\")"
+            },
+            boxShadow: {
+              'card-depth': '10px 10px 0px 0px rgba(45, 6, 10, 1)', // Hard shadow for "cutout" effect
+              'glow-gold': '0 0 25px rgba(197, 160, 89, 0.3)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Lato', sans-serif;
+        background-color: #F5E6D3; /* Default to Cream */
+        color: #4A0E15; /* Default text Maroon */
+      }
+      .font-display {
+        font-family: 'Cinzel', serif;
+      }
+      .font-serif {
+        font-family: 'Amiri', serif;
+      }
+      
+      .text-gold-gradient {
+        background: linear-gradient(to right, #C5A059, #EBCB8B, #C5A059);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #4A0E15; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #C5A059; 
+        border: 2px solid #4A0E15;
+      }
+  
+      .arch-mask {
+        mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 280 L20 280 L20 120 C 20 120, 10 90, 30 60 C 50 30, 100 10, 100 10 C 100 10, 150 30, 170 60 C 190 90, 180 120, 180 120 L180 280 Z' fill='black'/%3E%3C/svg%3E");
+        mask-size: cover;
+        mask-repeat: no-repeat;
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 280 L20 280 L20 120 C 20 120, 10 90, 30 60 C 50 30, 100 10, 100 10 C 100 10, 150 30, 170 60 C 190 90, 180 120, 180 120 L180 280 Z' fill='black'/%3E%3C/svg%3E");
+        -webkit-mask-size: cover;
+        -webkit-mask-repeat: no-repeat;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
