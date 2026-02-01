@@ -18,8 +18,8 @@ export const RESTAURANT_INFO = {
     email: 'lessaveursdumaghreb16@gmail.com'
   },
   hours: {
-    weekdays: '11h30 - 14h00 et 18h30 - 23h00',
-    detail: 'Ouvert 7j/7'
+    weekdays: '12:00-14:15 et 19:00-23:00',
+    detail: 'Horaires variables selon les jours'
   },
   services: ['Sur place', 'À emporter', 'Livraison'],
   specialties: ['Couscous Royal', 'Tajines traditionnels', 'Grillades maison']
@@ -30,7 +30,13 @@ export const CONTACT_INFO: ContactInfo = {
   email: "lessaveursdumaghreb16@gmail.com",
   address: "21 Rue des Maréchaux, 54000 Nancy",
   openingHours: [
-    "Lundi - Dimanche: 11h30 - 14h00 et 18h30 - 23h00"
+    "Lundi: 12:00-14:15, 19:00-23:00",
+    "Mardi: 12:00-14:15, 19:00-21:00",
+    "Mercredi: 12:00-14:15, 19:00-23:00",
+    "Jeudi: 12:00-14:15, 19:00-23:00",
+    "Vendredi: 12:00-14:15, 19:00-23:00",
+    "Samedi: 12:00-15:00, 19:00-23:00",
+    "Dimanche: 12:00-15:00, 19:00-23:00"
   ]
 };
 

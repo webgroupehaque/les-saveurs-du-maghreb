@@ -50,8 +50,7 @@ export const Footer: React.FC = () => {
                 <div className="flex items-start gap-3 justify-center md:justify-start">
                     <Clock size={18} className="text-brand-gold/70 mt-1 flex-shrink-0" />
                     <div className="text-brand-cream/80 text-sm space-y-1">
-                        <p>Lundi - Dimanche</p>
-                        <p>{RESTAURANT_INFO.hours.weekdays}</p>
+                        <p className="text-xs">Voir horaires détaillés</p>
                         <p className="text-brand-gold/70 text-xs mt-2">{RESTAURANT_INFO.hours.detail}</p>
                     </div>
                 </div>
