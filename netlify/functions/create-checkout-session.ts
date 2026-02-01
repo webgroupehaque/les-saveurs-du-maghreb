@@ -13,7 +13,7 @@ export const handler: Handler = async (event) => {
   try {
     const { cartItems, deliveryInfo, subtotal, deliveryFee, total, restaurantId } = JSON.parse(event.body || '{}');
 
-    // Créer les line items pour Stripe
+    // Créer les line items pour Stripe avec metadata pour récupération complète
     const lineItems = cartItems.map((item: any) => ({
       price_data: {
         currency: 'eur',
@@ -22,6 +22,13 @@ export const handler: Handler = async (event) => {
           description: item.options?.selectedChoices 
             ? item.options.selectedChoices.map((c: any) => c.name).join(', ')
             : undefined,
+          metadata: {
+            itemId: item.id,
+            category: item.category || '',
+            choices: item.options?.selectedChoices 
+              ? JSON.stringify(item.options.selectedChoices)
+              : ''
+          }
         },
         unit_amount: Math.round(item.price * 100),
       },
@@ -42,6 +49,23 @@ export const handler: Handler = async (event) => {
       });
     }
 
+    // Simplifier les items pour respecter la limite Stripe de 500 caractères par metadata
+    const simplifiedItems = cartItems.map((item: any) => ({
+      id: item.id,
+      name: item.name.substring(0, 100), // Limiter la longueur du nom
+      quantity: item.quantity,
+      price: item.price,
+      choices: item.options?.selectedChoices 
+        ? item.options.selectedChoices.map((c: any) => c.name).join(', ').substring(0, 100)
+        : ''
+    }));
+    
+    // Tronquer les instructions si trop longues
+    const maxInstructionsLength = 200;
+    const truncatedInstructions = deliveryInfo.instructions 
+      ? deliveryInfo.instructions.substring(0, maxInstructionsLength)
+      : '';
+    
     // Créer la session Stripe
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -52,20 +76,23 @@ export const handler: Handler = async (event) => {
       customer_email: deliveryInfo.email,
       metadata: {
         restaurantId: restaurantId || 'saveurs-maghreb',
-        customerName: deliveryInfo.name,
-        customerPhone: deliveryInfo.phone,
-        customerEmail: deliveryInfo.email,
-        deliveryAddress: deliveryInfo.address || '',
-        deliveryCity: deliveryInfo.city || '',
-        deliveryZipCode: deliveryInfo.zipCode || '',
+        customerName: deliveryInfo.name.substring(0, 100),
+        customerPhone: deliveryInfo.phone.substring(0, 50),
+        customerEmail: deliveryInfo.email.substring(0, 100),
+        deliveryAddress: (deliveryInfo.address || '').substring(0, 200),
+        deliveryCity: (deliveryInfo.city || '').substring(0, 50),
+        deliveryZipCode: (deliveryInfo.zipCode || '').substring(0, 10),
         orderType: deliveryInfo.orderType,
-        instructions: deliveryInfo.instructions || '',
-        orderData: JSON.stringify(cartItems),
-        subtotal: subtotal.toString(),
-        deliveryFee: deliveryFee.toString(),
-        totalAmount: total.toString(),
+        instructions: truncatedInstructions,
+        itemsCount: cartItems.length.toString(),
+        subtotal: subtotal.toFixed(2),
+        deliveryFee: deliveryFee.toFixed(2),
+        totalAmount: total.toFixed(2),
       },
     });
+    
+    // Stocker les données complètes dans la session (accessible via l'API Stripe)
+    // On utilisera la session.line_items dans le webhook pour récupérer les détails complets
 
     return {
       statusCode: 200,

@@ -39,7 +39,35 @@ export const handler: Handler = async (event) => {
         };
       }
 
-      const orderData = JSON.parse(metadata.orderData);
+      // Récupérer les line items complets depuis Stripe (plus fiable que les metadata)
+      const lineItemsResponse = await stripe.checkout.sessions.listLineItems(session.id, {
+        expand: ['data.price.product']
+      });
+      
+      // Reconstruire les items depuis les line items Stripe (exclure les frais de livraison)
+      const orderData = lineItemsResponse.data
+        .filter(item => {
+          // Exclure les frais de livraison
+          if (item.price?.product && typeof item.price.product === 'object' && 'name' in item.price.product) {
+            const product = item.price.product as Stripe.Product;
+            return product.name !== 'Frais de livraison';
+          }
+          return false;
+        })
+        .map(item => {
+          const product = item.price!.product as Stripe.Product;
+          return {
+            id: product.metadata?.itemId || `item-${Math.random()}`,
+            name: product.name,
+            quantity: item.quantity || 1,
+            price: (item.price!.unit_amount || 0) / 100,
+            category: product.metadata?.category || '',
+            image: undefined, // Les images ne sont pas stockées dans Stripe
+            options: product.metadata?.choices ? { 
+              selectedChoices: JSON.parse(product.metadata.choices) 
+            } : undefined
+          };
+        });
 
       // Générer un code de commande unique
       const orderCode = String(Math.floor(1000 + Math.random() * 9000));
