@@ -1,19 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, Home } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 export const Success: React.FC = () => {
   const [orderCode, setOrderCode] = useState('');
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Récupérer le session_id depuis l'URL
-    const params = new URLSearchParams(window.location.search);
-    const sessionId = params.get('session_id');
+    const fetchOrderCode = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Récupérer le session_id depuis l'URL
+        const params = new URLSearchParams(window.location.search);
+        const sessionIdParam = params.get('session_id');
+        
+        if (!sessionIdParam) {
+          console.error('Pas de session_id dans l\'URL');
+          setIsLoading(false);
+          return;
+        }
+        
+        setSessionId(sessionIdParam);
+        
+        // Récupérer le vrai code de commande depuis Supabase
+        const { data, error } = await supabase
+          .from('orders')
+          .select('order_code')
+          .eq('stripe_session_id', sessionIdParam)
+          .single();
+        
+        if (error) {
+          console.error('Erreur Supabase:', error);
+          // Générer un code temporaire en attendant
+          const tempCode = String(Math.floor(1000 + Math.random() * 9000));
+          setOrderCode(tempCode);
+        } else if (data) {
+          // Utiliser le vrai code de Supabase
+          setOrderCode(data.order_code);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération du code:', error);
+        // Générer un code temporaire en cas d'erreur
+        const tempCode = String(Math.floor(1000 + Math.random() * 9000));
+        setOrderCode(tempCode);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    if (sessionId) {
-      // Générer un code de commande (temporaire - sera remplacé par celui de Supabase)
-      const code = String(Math.floor(1000 + Math.random() * 9000));
-      setOrderCode(code);
-    }
+    fetchOrderCode();
   }, []);
   
   const handleReturnHome = () => {
@@ -31,12 +68,19 @@ export const Success: React.FC = () => {
           Commande Confirmée !
         </h1>
         
-        {orderCode && (
+        {isLoading ? (
+          <div className="bg-brand-cream rounded-lg p-4 mb-6">
+            <p className="text-sm text-brand-maroon/70 mb-1">Chargement...</p>
+            <div className="flex justify-center mt-2">
+              <div className="w-6 h-6 border-2 border-brand-maroon border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          </div>
+        ) : orderCode ? (
           <div className="bg-brand-cream rounded-lg p-4 mb-6">
             <p className="text-sm text-brand-maroon/70 mb-1">Numéro de commande</p>
             <p className="text-4xl font-bold text-brand-maroon">#{orderCode}</p>
           </div>
-        )}
+        ) : null}
         
         <p className="text-gray-600 mb-6">
           Votre paiement a été accepté. Vous allez recevoir un email de confirmation avec tous les détails de votre commande.
