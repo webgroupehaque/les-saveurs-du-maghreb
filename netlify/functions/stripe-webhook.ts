@@ -157,9 +157,6 @@ export const handler: Handler = async (event) => {
                 <p style="margin: 0; font-size: 48px; font-weight: bold; color: #f59e0b; letter-spacing: 3px;">
                   #${orderCode}
                 </p>
-                <p style="margin: 10px 0 0 0; color: #92400e; font-size: 14px;">
-                  À communiquer au client si besoin
-                </p>
               </div>
               
               <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -221,19 +218,26 @@ export const handler: Handler = async (event) => {
             <div style="padding: 30px; background-color: #f8f9fa;">
               <div style="background: #d1fae5; border-left: 4px solid #2d6a4f; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
                 <h2 style="color: #2d6a4f; margin: 0 0 10px 0; font-size: 20px;">✅ Commande confirmée !</h2>
-                <p style="margin: 0; color: #1f2937;">Votre commande a bien été reçue et sera préparée dans les plus brefs délais.</p>
-                <p style="margin: 10px 0 0 0; color: #1f2937; font-weight: bold;">Merci de communiquer votre numéro de commande ci-dessous lors de la réception.</p>
+                ${metadata.orderType === 'delivery' ? `
+                  <p style="margin: 0; color: #1f2937;">Votre commande a bien été reçue et sera préparée dans les plus brefs délais.</p>
+                  <p style="margin: 10px 0 0 0; color: #1f2937; font-weight: bold;">Votre numéro de commande ci-dessous est à communiquer au livreur.</p>
+                ` : `
+                  <p style="margin: 0; color: #1f2937;">Votre commande a bien été reçue et sera préparée dans les plus brefs délais.</p>
+                  <p style="margin: 10px 0 0 0; color: #1f2937; font-weight: bold;">Venez récupérer votre commande au restaurant : 21 Rue des Maréchaux, 54000 Nancy</p>
+                `}
               </div>
               
-              <div style="background: #d1fae5; border: 3px solid #2d6a4f; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
-                <p style="margin: 0 0 10px 0; color: #1b4332; font-size: 16px; font-weight: bold;">📋 VOTRE NUMÉRO DE COMMANDE</p>
-                <p style="margin: 0; font-size: 48px; font-weight: bold; color: #2d6a4f; letter-spacing: 3px;">
-                  #${orderCode}
-                </p>
-                <p style="margin: 10px 0 0 0; color: #1b4332; font-size: 14px;">
-                  Conservez ce numéro pour le suivi de votre commande
-                </p>
-              </div>
+              ${metadata.orderType === 'delivery' ? `
+                <div style="background: #d1fae5; border: 3px solid #2d6a4f; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
+                  <p style="margin: 0 0 10px 0; color: #1b4332; font-size: 16px; font-weight: bold;">📋 NUMÉRO DE COMMANDE À COMMUNIQUER AU LIVREUR</p>
+                  <p style="margin: 0; font-size: 48px; font-weight: bold; color: #2d6a4f; letter-spacing: 3px;">
+                    #${orderCode}
+                  </p>
+                  <p style="margin: 10px 0 0 0; color: #1b4332; font-size: 14px;">
+                    Conservez ce numéro pour le suivi de votre commande
+                  </p>
+                </div>
+              ` : ''}
               
               <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
                 <h3 style="margin: 0 0 15px 0; color: #1f2937;">📦 Récapitulatif</h3>

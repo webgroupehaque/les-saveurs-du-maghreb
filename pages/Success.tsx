@@ -44,8 +44,14 @@ export const Success: React.FC = () => {
           <p className="text-center text-brand-maroon font-bold text-lg mb-2">
             📧 Consultez vos emails
           </p>
-          <p className="text-center text-gray-600 text-sm">
-            Votre <strong>numéro de commande</strong> et tous les détails vous ont été envoyés par email.
+          <p className="text-center text-gray-600 text-sm mb-2">
+            Tous les détails de votre commande vous ont été envoyés par email.
+          </p>
+          <p className="text-center text-gray-600 text-sm font-semibold">
+            Pour la livraison : votre numéro de commande est dans l'email.
+          </p>
+          <p className="text-center text-gray-600 text-sm font-semibold">
+            Pour l'emporter : venez récupérer votre commande au restaurant.
           </p>
           <p className="text-center text-gray-500 text-xs mt-2">
             Vérifiez également vos spams si vous ne le trouvez pas.
