@@ -55,7 +55,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
   const handleAddComposedItem = () => {
     if (!selectedItem || selectedChoices.length !== selectedItem.options?.requiredSelections) return;
     
-    // Créer le tableau des choix sélectionnés avec leurs noms
+    // Créer le tableau des choix sélectionnés avec leurs noms et prix
     const selectedChoicesWithNames = selectedChoices.map(id => {
       const choice = selectedItem.options!.availableChoices!.find(c => c.id === id);
       return {
@@ -64,8 +64,20 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
       };
     }).filter(c => c.name !== '');
     
+    // Calculer le prix total selon les choix sélectionnés
+    const totalPrice = selectedChoices.reduce((sum, choiceId) => {
+      const choice = selectedItem.options!.availableChoices!.find(c => c.id === choiceId);
+      return sum + (choice?.price || 0);
+    }, 0);
+    
+    // Créer un item avec le prix calculé
+    const itemWithPrice = {
+      ...selectedItem,
+      price: totalPrice
+    };
+    
     // Appeler onAddToCart avec les choix sélectionnés
-    onAddToCart(selectedItem, selectedChoicesWithNames);
+    onAddToCart(itemWithPrice, selectedChoicesWithNames);
     setSelectedItem(null);
     setSelectedChoices([]);
   };
@@ -138,9 +150,19 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
                   <h3 className="text-lg font-serif text-brand-maroon group-hover:text-brand-maroon-dark transition-colors flex-1 pr-2">
                     {item.name}
                   </h3>
-                  <span className="text-xl font-display text-brand-gold font-bold flex-shrink-0">
-                    {item.price.toFixed(2).replace('.', ',')}€
-                  </span>
+                  {item.options?.isComposed && (item.id === 'eau' || item.id === 'soda' || item.id === 'samoussas') ? (
+                    <span className="text-xl font-display text-brand-gold font-bold flex-shrink-0">
+                      {item.options.availableChoices?.[0]?.price?.toFixed(2).replace('.', ',') || '0,00'}€
+                    </span>
+                  ) : item.options?.isComposed ? (
+                    <span className="text-sm font-display text-brand-maroon/60 flex-shrink-0">
+                      À partir de
+                    </span>
+                  ) : (
+                    <span className="text-xl font-display text-brand-gold font-bold flex-shrink-0">
+                      {item.price.toFixed(2).replace('.', ',')}€
+                    </span>
+                  )}
                 </div>
                 
                 <p className="text-brand-maroon/70 text-sm font-serif leading-relaxed mb-4 min-h-[3rem]">
@@ -181,6 +203,8 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
               <div className="space-y-2 mb-6">
                 {selectedItem.options.availableChoices?.map((choice) => {
                   const count = selectedChoices.filter(id => id === choice.id).length;
+                  const choicePrice = choice.price || 0;
+                  const showPrice = !(selectedItem.id === 'eau' || selectedItem.id === 'soda' || selectedItem.id === 'samoussas');
                   return (
                     <button
                       key={choice.id}
@@ -191,23 +215,33 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
                           : 'border-brand-maroon/20 hover:border-brand-gold/50 text-brand-maroon/70'
                       }`}
                     >
-                      <span>{choice.name}</span>
-                      {count > 0 && (
-                        <span className="bg-brand-gold text-brand-maroon rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
-                          {count}
-                        </span>
-                      )}
+                      <span className="font-medium">{choice.name}</span>
+                      <div className="flex items-center gap-2">
+                        {showPrice && (
+                          <span className="text-brand-gold font-bold">
+                            {choicePrice.toFixed(2).replace('.', ',')}€
+                          </span>
+                        )}
+                        {count > 0 && (
+                          <span className="bg-brand-gold text-brand-maroon rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                            {count}
+                          </span>
+                        )}
+                      </div>
                     </button>
                   );
                 })}
               </div>
               
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-lg font-display text-brand-gold font-bold">
-                  {selectedItem.price.toFixed(2).replace('.', ',')}€
-                </span>
-                <span className="text-sm text-brand-maroon/60">
+              <div className="flex justify-between items-center mb-4 p-3 bg-brand-maroon/5 rounded-lg">
+                <span className="text-sm text-brand-maroon/70">
                   {selectedChoices.length} / {selectedItem.options.requiredSelections} sélectionné(s)
+                </span>
+                <span className="text-xl font-display text-brand-gold font-bold">
+                  {selectedChoices.reduce((sum, choiceId) => {
+                    const choice = selectedItem.options!.availableChoices!.find(c => c.id === choiceId);
+                    return sum + (choice?.price || 0);
+                  }, 0).toFixed(2).replace('.', ',')}€
                 </span>
               </div>
               

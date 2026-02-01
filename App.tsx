@@ -92,21 +92,40 @@ function App() {
     setIsCartOpen(false);
     setIsCheckingOut(true);
     
-    // Scroll directement vers le formulaire de commande
+    // Scroll directement vers le formulaire de commande (en haut avec offset pour la navbar)
     setTimeout(() => {
       const checkoutForm = document.getElementById('checkout-form');
       if (checkoutForm) {
-        checkoutForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const elementPosition = checkoutForm.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - 150; // 150px pour la navbar et plus d'espace
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
       } else {
         // Si le formulaire n'est pas encore rendu, scroll vers contact puis vers le formulaire
         const contactSection = document.getElementById('contact');
         if (contactSection) {
-          contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const elementPosition = contactSection.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - 150;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+          
           // Attendre que le formulaire soit rendu puis scroll vers lui
           setTimeout(() => {
             const form = document.getElementById('checkout-form');
             if (form) {
-              form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              const formPosition = form.getBoundingClientRect().top;
+              const formOffset = formPosition + window.pageYOffset - 150;
+              
+              window.scrollTo({
+                top: formOffset,
+                behavior: 'smooth'
+              });
             }
           }, 300);
         }

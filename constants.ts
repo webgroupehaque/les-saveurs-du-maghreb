@@ -198,100 +198,58 @@ export const MENU_ITEMS: MenuItem[] = [
 
   // ENTRÉES
   {
-    id: 'beignet-calamar',
-    name: 'Beignets de Calamars',
-    description: 'Calamars frits avec sauce',
-    price: 8.90,
+    id: 'beignets',
+    name: 'Beignets',
+    description: 'Beignets frits avec sauce. Parfums disponibles : Calamars, Oignons, Poulet, Pommes de terre, Aubergine, Poisson',
+    price: 0, // Prix sera calculé selon le choix
     category: 'Entrées',
-    image: "/images/menu/beignet-calamar.png"
+    image: "/images/menu/beignet-calamar.png",
+    options: {
+      isComposed: true,
+      requiredSelections: 1,
+      availableChoices: [
+        { id: 'calamar', name: 'Calamars', category: 'beignets', price: 8.90 },
+        { id: 'oignon', name: 'Oignons', category: 'beignets', price: 6.90 },
+        { id: 'poulet', name: 'Poulet', category: 'beignets', price: 8.90 },
+        { id: 'pomme-terre', name: 'Pommes de terre', category: 'beignets', price: 6.90 },
+        { id: 'aubergine', name: 'Aubergine', category: 'beignets', price: 6.90 },
+        { id: 'poisson', name: 'Poisson', category: 'beignets', price: 10.90 }
+      ]
+    }
   },
   {
-    id: 'beignet-oignon',
-    name: "Beignets d'Oignons",
-    description: 'Rondelles d\'oignons frites',
-    price: 6.90,
+    id: 'nems',
+    name: 'Nems',
+    description: 'Nems croustillants. Parfums disponibles : Poulet, Bœuf, Crevettes, Légumes',
+    price: 0, // Prix sera calculé selon le choix
     category: 'Entrées',
-    image: "/images/menu/beignet-oignon.png"
+    image: "/images/menu/nem-poulet.png",
+    options: {
+      isComposed: true,
+      requiredSelections: 1,
+      availableChoices: [
+        { id: 'poulet', name: 'Poulet', category: 'nems', price: 9.90 },
+        { id: 'boeuf', name: 'Bœuf', category: 'nems', price: 9.90 },
+        { id: 'crevettes', name: 'Crevettes', category: 'nems', price: 10.90 },
+        { id: 'legumes', name: 'Légumes', category: 'nems', price: 8.90 }
+      ]
+    }
   },
   {
-    id: 'beignet-poulet',
-    name: 'Beignet de Poulet',
-    description: 'Poulet frit avec sauce',
-    price: 8.90,
+    id: 'samoussas',
+    name: 'Samoussas',
+    description: 'Samoussas croustillants. Parfums disponibles : Viande, Légumes',
+    price: 0, // Prix sera calculé selon le choix
     category: 'Entrées',
-    image: "/images/menu/beignet-poulet.png"
-  },
-  {
-    id: 'beignet-pomme-terre',
-    name: 'Beignet de Pommes de Terre',
-    description: 'Rondelles de pommes de terre frites',
-    price: 6.90,
-    category: 'Entrées',
-    image: "/images/menu/beignet-pomme-terre.png"
-  },
-  {
-    id: 'beignet-aubergine',
-    name: 'Beignet d\'Aubergine',
-    description: 'Rondelles d\'aubergine frites',
-    price: 6.90,
-    category: 'Entrées',
-    image: "/images/menu/beignet-aubergine.png"
-  },
-  {
-    id: 'beignet-poisson',
-    name: 'Beignet de Poisson',
-    description: 'Poisson frit avec sauce',
-    price: 10.90,
-    category: 'Entrées',
-    image: "/images/menu/beignet-poisson.png"
-  },
-  {
-    id: 'nem-poulet',
-    name: 'Nems Poulet',
-    description: 'Nems farcis au poulet',
-    price: 9.90,
-    category: 'Entrées',
-    image: "/images/menu/nem-poulet.png"
-  },
-  {
-    id: 'nem-boeuf',
-    name: 'Nems Bœuf',
-    description: 'Nems farcis au bœuf',
-    price: 9.90,
-    category: 'Entrées',
-    image: "/images/menu/nem-boeuf.png"
-  },
-  {
-    id: 'nem-crevettes',
-    name: 'Nems Crevettes',
-    description: 'Nems farcis aux crevettes',
-    price: 10.90,
-    category: 'Entrées',
-    image: "/images/menu/nem-crevettes.png"
-  },
-  {
-    id: 'nem-vegetarien',
-    name: 'Nems aux Légumes',
-    description: 'Nems farcis aux légumes',
-    price: 8.90,
-    category: 'Entrées',
-    image: "/images/menu/nem-vegetarien.png"
-  },
-  {
-    id: 'samoussa-viande',
-    name: 'Samoussa Viande',
-    description: 'Samoussa farcis à la viande',
-    price: 6.90,
-    category: 'Entrées',
-    image: "/images/menu/samoussa-viande.png"
-  },
-  {
-    id: 'samoussa-vegetarien',
-    name: 'Samoussa aux Légumes',
-    description: 'Samoussa farcis aux légumes',
-    price: 6.90,
-    category: 'Entrées',
-    image: "/images/menu/samoussa-vegetarien.png"
+    image: "/images/menu/samoussa-viande.png",
+    options: {
+      isComposed: true,
+      requiredSelections: 1,
+      availableChoices: [
+        { id: 'viande', name: 'Viande', category: 'samoussas', price: 6.90 },
+        { id: 'legumes', name: 'Légumes', category: 'samoussas', price: 6.90 }
+      ]
+    }
   },
   {
     id: 'nuggets',
@@ -437,35 +395,35 @@ export const MENU_ITEMS: MenuItem[] = [
   {
     id: 'eau',
     name: 'Eau Minérale',
-    description: '50cl',
-    price: 3.90,
+    description: '50cl. Choix : Vittel, San Pellegrino',
+    price: 0, // Prix sera calculé selon le choix
     category: 'Boissons',
     image: "/images/menu/eau.png",
     options: {
       isComposed: true,
       requiredSelections: 1,
       availableChoices: [
-        { id: 'vittel', name: 'Vittel', category: 'eau' },
-        { id: 'san-pellegrino', name: 'San Pellegrino', category: 'eau' }
+        { id: 'vittel', name: 'Vittel', category: 'eau', price: 3.90 },
+        { id: 'san-pellegrino', name: 'San Pellegrino', category: 'eau', price: 3.90 }
       ]
     }
   },
   {
     id: 'soda',
     name: 'Soda',
-    description: '33cl',
-    price: 3.90,
+    description: '33cl. Choix : Coca Zero, Coca, Lipton, Orangina, Fanta',
+    price: 0, // Prix sera calculé selon le choix
     category: 'Boissons',
     image: "/images/menu/soda.png",
     options: {
       isComposed: true,
       requiredSelections: 1,
       availableChoices: [
-        { id: 'coca-zero', name: 'Coca Zero', category: 'sodas' },
-        { id: 'coca', name: 'Coca', category: 'sodas' },
-        { id: 'lipton', name: 'Lipton', category: 'sodas' },
-        { id: 'orangina', name: 'Orangina', category: 'sodas' },
-        { id: 'fanta', name: 'Fanta', category: 'sodas' }
+        { id: 'coca-zero', name: 'Coca Zero', category: 'sodas', price: 3.90 },
+        { id: 'coca', name: 'Coca', category: 'sodas', price: 3.90 },
+        { id: 'lipton', name: 'Lipton', category: 'sodas', price: 3.90 },
+        { id: 'orangina', name: 'Orangina', category: 'sodas', price: 3.90 },
+        { id: 'fanta', name: 'Fanta', category: 'sodas', price: 3.90 }
       ]
     }
   },
