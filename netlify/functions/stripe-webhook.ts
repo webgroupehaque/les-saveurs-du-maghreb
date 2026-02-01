@@ -152,6 +152,16 @@ export const handler: Handler = async (event) => {
             <div style="padding: 30px; background-color: #f8f9fa;">
               <h2 style="color: #2d6a4f; margin-top: 0;">Nouvelle Commande #${orderCode}</h2>
               
+              <div style="background: #fef3c7; border: 3px solid #f59e0b; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
+                <p style="margin: 0 0 10px 0; color: #92400e; font-size: 16px; font-weight: bold;">📋 NUMÉRO DE COMMANDE</p>
+                <p style="margin: 0; font-size: 48px; font-weight: bold; color: #f59e0b; letter-spacing: 3px;">
+                  #${orderCode}
+                </p>
+                <p style="margin: 10px 0 0 0; color: #92400e; font-size: 14px;">
+                  À communiquer au client si besoin
+                </p>
+              </div>
+              
               <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
                 <h3 style="margin: 0 0 15px 0; color: #1f2937;">👤 Client</h3>
                 <p style="margin: 5px 0; color: #4b5563;"><strong>Nom :</strong> ${metadata.customerName}</p>
@@ -211,7 +221,18 @@ export const handler: Handler = async (event) => {
             <div style="padding: 30px; background-color: #f8f9fa;">
               <div style="background: #d1fae5; border-left: 4px solid #2d6a4f; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
                 <h2 style="color: #2d6a4f; margin: 0 0 10px 0; font-size: 20px;">✅ Commande confirmée !</h2>
-                <p style="margin: 0; color: #1f2937;">Votre commande #${orderCode} a bien été reçue et sera préparée dans les plus brefs délais.</p>
+                <p style="margin: 0; color: #1f2937;">Votre commande a bien été reçue et sera préparée dans les plus brefs délais.</p>
+                <p style="margin: 10px 0 0 0; color: #1f2937; font-weight: bold;">Merci de communiquer votre numéro de commande ci-dessous lors de la réception.</p>
+              </div>
+              
+              <div style="background: #d1fae5; border: 3px solid #2d6a4f; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
+                <p style="margin: 0 0 10px 0; color: #1b4332; font-size: 16px; font-weight: bold;">📋 VOTRE NUMÉRO DE COMMANDE</p>
+                <p style="margin: 0; font-size: 48px; font-weight: bold; color: #2d6a4f; letter-spacing: 3px;">
+                  #${orderCode}
+                </p>
+                <p style="margin: 10px 0 0 0; color: #1b4332; font-size: 14px;">
+                  Conservez ce numéro pour le suivi de votre commande
+                </p>
               </div>
               
               <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
