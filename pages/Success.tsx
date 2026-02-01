@@ -3,26 +3,20 @@ import { CheckCircle, Home } from 'lucide-react';
 
 export const Success: React.FC = () => {
   const [orderCode, setOrderCode] = useState('');
-  const [sessionId, setSessionId] = useState<string | null>(null);
   
   useEffect(() => {
-    // Récupérer session_id depuis l'URL
+    // Récupérer le session_id depuis l'URL
     const params = new URLSearchParams(window.location.search);
-    const id = params.get('session_id');
-    setSessionId(id);
+    const sessionId = params.get('session_id');
     
-    // Générer un code de commande temporaire (sera remplacé par le vrai code depuis Supabase)
-    const code = String(Math.floor(1000 + Math.random() * 9000));
-    setOrderCode(code);
+    if (sessionId) {
+      // Générer un code de commande (temporaire - sera remplacé par celui de Supabase)
+      const code = String(Math.floor(1000 + Math.random() * 9000));
+      setOrderCode(code);
+    }
   }, []);
   
-  useEffect(() => {
-    // Générer un code de commande temporaire (sera remplacé par le vrai code depuis Supabase)
-    const code = String(Math.floor(1000 + Math.random() * 9000));
-    setOrderCode(code);
-  }, []);
-  
-  const handleGoHome = () => {
+  const handleReturnHome = () => {
     window.location.href = '/';
   };
   
@@ -48,14 +42,13 @@ export const Success: React.FC = () => {
           Votre paiement a été accepté. Vous allez recevoir un email de confirmation avec tous les détails de votre commande.
         </p>
         
-        {sessionId && (
-          <p className="text-xs text-gray-500 mb-6">
-            Session ID: {sessionId.substring(0, 20)}...
-          </p>
-        )}
+        <p className="text-sm text-gray-500 mb-6">
+          Merci de votre confiance !<br/>
+          <strong>Les Saveurs du Maghreb</strong>
+        </p>
         
         <button
-          onClick={handleGoHome}
+          onClick={handleReturnHome}
           className="inline-flex items-center gap-2 bg-brand-maroon text-white px-6 py-3 rounded-lg hover:bg-brand-maroon-dark transition-colors"
         >
           <Home className="w-5 h-5" />

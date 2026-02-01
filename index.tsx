@@ -9,7 +9,9 @@ if (!rootElement) {
 }
 
 // Détecter si on est sur la page success
-const isSuccessPage = window.location.pathname === '/success' || window.location.search.includes('session_id');
+const isSuccessPage = window.location.pathname === '/success' || 
+                      window.location.pathname.includes('/success') ||
+                      window.location.search.includes('session_id');
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
