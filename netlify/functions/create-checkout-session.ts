@@ -12,6 +12,10 @@ export const handler: Handler = async (event) => {
 
   try {
     const { cartItems, deliveryInfo, subtotal, deliveryFee, total, restaurantId } = JSON.parse(event.body || '{}');
+    
+    console.log('📥 create-checkout-session appelé');
+    console.log('🏪 Restaurant ID reçu:', restaurantId);
+    console.log('📦 Nombre d\'articles:', cartItems?.length || 0);
 
     // Créer les line items pour Stripe avec metadata pour récupération complète
     const lineItems = cartItems.map((item: any) => ({
@@ -75,7 +79,7 @@ export const handler: Handler = async (event) => {
       cancel_url: `${event.headers.origin || 'https://saveurs-maghreb.netlify.app'}/?canceled=true`,
       customer_email: deliveryInfo.email,
       metadata: {
-        restaurantId: restaurantId || 'saveurs-maghreb',
+        restaurantId: restaurantId || 'saveurs-maghreb', // Valeur par défaut si non fournie
         customerName: deliveryInfo.name.substring(0, 100),
         customerPhone: deliveryInfo.phone.substring(0, 50),
         customerEmail: deliveryInfo.email.substring(0, 100),
@@ -90,6 +94,11 @@ export const handler: Handler = async (event) => {
         totalAmount: total.toFixed(2),
       },
     });
+    
+    console.log('✅ Session Stripe créée !');
+    console.log('🔑 Session ID:', session.id);
+    console.log('🏪 Restaurant ID dans metadata:', session.metadata?.restaurantId);
+    console.log('📧 Customer email:', session.customer_email);
     
     // Stocker les données complètes dans la session (accessible via l'API Stripe)
     // On utilisera la session.line_items dans le webhook pour récupérer les détails complets

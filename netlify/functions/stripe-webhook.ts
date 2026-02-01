@@ -13,6 +13,10 @@ const supabase = createClient(
 );
 
 export const handler: Handler = async (event) => {
+  console.log('🔔 Webhook Stripe appelé !');
+  console.log('📥 Headers:', JSON.stringify(event.headers, null, 2));
+  console.log('📦 Body length:', event.body?.length || 0);
+  
   const sig = event.headers['stripe-signature']!;
 
   try {
@@ -22,22 +26,34 @@ export const handler: Handler = async (event) => {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
 
+    console.log('✅ Webhook Stripe validé !');
+    console.log('📋 Event type:', stripeEvent.type);
+
     if (stripeEvent.type === 'checkout.session.completed') {
       const session = stripeEvent.data.object as Stripe.Checkout.Session;
       const metadata = session.metadata!;
 
+      console.log('📥 Webhook reçu pour restaurant:', metadata.restaurantId);
+      console.log('📋 Metadata complètes:', JSON.stringify(metadata, null, 2));
+      console.log('🔍 Session ID:', session.id);
+      console.log('📧 Customer email:', session.customer_email);
+
       // ✅ FILTRE : Ignore les commandes qui ne sont pas pour ce restaurant
       if (metadata.restaurantId !== 'saveurs-maghreb') {
-        console.log(`⚠️ Webhook ignoré : commande pour ${metadata.restaurantId}, pas pour saveurs-maghreb`);
+        console.log(`⚠️ Webhook ignoré : commande pour "${metadata.restaurantId}", pas pour "saveurs-maghreb"`);
+        console.log(`🔍 Comparaison: "${metadata.restaurantId}" !== "saveurs-maghreb" = ${metadata.restaurantId !== 'saveurs-maghreb'}`);
         return {
           statusCode: 200,
           body: JSON.stringify({ 
             received: true, 
             ignored: true,
-            reason: 'Not for this restaurant'
+            reason: 'Not for this restaurant',
+            receivedRestaurantId: metadata.restaurantId
           })
         };
       }
+
+      console.log('✅ Restaurant ID valide, traitement de la commande...');
 
       // Récupérer les line items complets depuis Stripe (plus fiable que les metadata)
       const lineItemsResponse = await stripe.checkout.sessions.listLineItems(session.id, {
@@ -71,9 +87,11 @@ export const handler: Handler = async (event) => {
 
       // Générer un code de commande unique
       const orderCode = String(Math.floor(1000 + Math.random() * 9000));
+      console.log('🎲 Code de commande généré:', orderCode);
+      console.log('📦 Nombre d\'articles:', orderData.length);
 
       // Sauvegarder dans Supabase
-      const { error: dbError } = await supabase.from('orders').insert({
+      const orderToInsert = {
         restaurant_id: 'saveurs-maghreb',
         order_code: orderCode,
         customer_name: metadata.customerName,
@@ -90,10 +108,24 @@ export const handler: Handler = async (event) => {
         total_amount: parseFloat(metadata.totalAmount),
         payment_status: 'paid',
         stripe_session_id: session.id,
+      };
+
+      console.log('💾 Tentative d\'insertion dans Supabase...');
+      console.log('📋 Données à insérer:', JSON.stringify(orderToInsert, null, 2));
+
+      const { data: insertedData, error: dbError } = await supabase.from('orders').insert(orderToInsert);
+
+      console.log('💾 Supabase insert result:', { 
+        insertedData: insertedData ? 'Success' : 'No data returned',
+        error: dbError ? dbError.message : null 
       });
 
       if (dbError) {
-        console.error('Supabase error:', dbError);
+        console.error('❌ Supabase error:', dbError);
+        console.error('❌ Error details:', JSON.stringify(dbError, null, 2));
+      } else {
+        console.log('✅ Commande sauvegardée dans Supabase !');
+        console.log('✅ Order code:', orderCode);
       }
 
       // Envoyer les emails
@@ -241,8 +273,14 @@ export const handler: Handler = async (event) => {
         `,
       };
 
+      console.log('📧 Envoi des emails...');
       await transporter.sendMail(restaurantEmail);
+      console.log('✅ Email restaurateur envoyé');
       await transporter.sendMail(clientEmail);
+      console.log('✅ Email client envoyé');
+      console.log('🎉 Commande traitée avec succès !');
+    } else {
+      console.log('ℹ️ Event type non géré:', stripeEvent.type);
     }
 
     return {
@@ -250,7 +288,9 @@ export const handler: Handler = async (event) => {
       body: JSON.stringify({ received: true }),
     };
   } catch (error: any) {
-    console.error('Webhook error:', error);
+    console.error('❌ Webhook error:', error);
+    console.error('❌ Error stack:', error.stack);
+    console.error('❌ Error message:', error.message);
     return {
       statusCode: 400,
       body: JSON.stringify({ error: error.message }),
