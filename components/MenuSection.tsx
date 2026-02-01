@@ -65,10 +65,13 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
     }).filter(c => c.name !== '');
     
     // Calculer le prix total selon les choix sélectionnés
-    const totalPrice = selectedChoices.reduce((sum, choiceId) => {
-      const choice = selectedItem.options!.availableChoices!.find(c => c.id === choiceId);
-      return sum + (choice?.price || 0);
-    }, 0);
+    // Pour glace-2-boules et sorbet-2-boules, utiliser le prix fixe de l'item
+    const totalPrice = (selectedItem.id === 'glace-2-boules' || selectedItem.id === 'sorbet-2-boules')
+      ? selectedItem.price
+      : selectedChoices.reduce((sum, choiceId) => {
+          const choice = selectedItem.options!.availableChoices!.find(c => c.id === choiceId);
+          return sum + (choice?.price || 0);
+        }, 0);
     
     // Créer un item avec le prix calculé
     const itemWithPrice = {
@@ -154,7 +157,11 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
                     <span className="text-xl font-display text-brand-gold font-bold flex-shrink-0">
                       {item.options.availableChoices?.[0]?.price?.toFixed(2).replace('.', ',') || '0,00'}€
                     </span>
-                  ) : item.options?.isComposed ? (
+                  ) : item.options?.isComposed && (item.id === 'glace-2-boules' || item.id === 'sorbet-2-boules') ? (
+                    <span className="text-xl font-display text-brand-gold font-bold flex-shrink-0">
+                      {item.price.toFixed(2).replace('.', ',')}€
+                    </span>
+                  ) : item.options?.isComposed && item.id === 'naans' ? null : item.options?.isComposed ? (
                     <span className="text-sm font-display text-brand-maroon/60 flex-shrink-0">
                       À partir de
                     </span>
@@ -204,7 +211,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
                 {selectedItem.options.availableChoices?.map((choice) => {
                   const count = selectedChoices.filter(id => id === choice.id).length;
                   const choicePrice = choice.price || 0;
-                  const showPrice = !(selectedItem.id === 'eau' || selectedItem.id === 'soda' || selectedItem.id === 'samoussas');
+                  const showPrice = !(selectedItem.id === 'eau' || selectedItem.id === 'soda' || selectedItem.id === 'samoussas' || selectedItem.id === 'glace-2-boules' || selectedItem.id === 'sorbet-2-boules');
                   return (
                     <button
                       key={choice.id}
@@ -238,10 +245,13 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
                   {selectedChoices.length} / {selectedItem.options.requiredSelections} sélectionné(s)
                 </span>
                 <span className="text-xl font-display text-brand-gold font-bold">
-                  {selectedChoices.reduce((sum, choiceId) => {
-                    const choice = selectedItem.options!.availableChoices!.find(c => c.id === choiceId);
-                    return sum + (choice?.price || 0);
-                  }, 0).toFixed(2).replace('.', ',')}€
+                  {(selectedItem.id === 'glace-2-boules' || selectedItem.id === 'sorbet-2-boules')
+                    ? selectedItem.price.toFixed(2).replace('.', ',') + '€'
+                    : selectedChoices.reduce((sum, choiceId) => {
+                        const choice = selectedItem.options!.availableChoices!.find(c => c.id === choiceId);
+                        return sum + (choice?.price || 0);
+                      }, 0).toFixed(2).replace('.', ',') + '€'
+                  }
                 </span>
               </div>
               

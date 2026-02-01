@@ -296,35 +296,34 @@ export const MENU_ITEMS: MenuItem[] = [
     image: "/images/menu/frites.png"
   },
   {
-    id: 'nan-nature',
-    name: 'Nan Nature',
-    description: 'Pain nan nature',
-    price: 3.50,
+    id: 'naans',
+    name: 'Naans',
+    description: 'Pain naan traditionnel. Parfums disponibles : Nature, Fromage, Ail, Ail avec fromage, Gingembre, Ail avec gingembre, Amande, Raisin, Sucré noix de coco',
+    price: 0, // Prix sera calculé selon le choix
     category: 'Accompagnements',
-    image: "/images/menu/nan-nature.png"
-  },
-  {
-    id: 'nan-fromage',
-    name: 'Nan Fromage',
-    description: 'Pain nan au fromage',
-    price: 3.50,
-    category: 'Accompagnements',
-    image: "/images/menu/nan-fromage.png"
-  },
-  {
-    id: 'nan-ail',
-    name: 'Nan Ail',
-    description: 'Pain nan à l\'ail',
-    price: 4.50,
-    category: 'Accompagnements',
-    image: "/images/menu/nan-ail.png"
+    image: "/images/menu/nan-nature.png",
+    options: {
+      isComposed: true,
+      requiredSelections: 1,
+      availableChoices: [
+        { id: 'nature', name: 'Nature', category: 'naans', price: 3.00 },
+        { id: 'fromage', name: 'Fromage', category: 'naans', price: 3.50 },
+        { id: 'ail', name: 'Ail', category: 'naans', price: 4.50 },
+        { id: 'ail-fromage', name: 'Ail avec fromage', category: 'naans', price: 5.00 },
+        { id: 'gingembre', name: 'Gingembre', category: 'naans', price: 5.00 },
+        { id: 'ail-gingembre', name: 'Ail avec gingembre', category: 'naans', price: 5.00 },
+        { id: 'amande', name: 'Amande', category: 'naans', price: 5.00 },
+        { id: 'raisin', name: 'Raisin', category: 'naans', price: 5.00 },
+        { id: 'coco', name: 'Sucré noix de coco', category: 'naans', price: 5.00 }
+      ]
+    }
   },
 
   // DESSERTS
   {
     id: 'glace-2-boules',
     name: 'Glace 2 Boules',
-    description: 'Vanille, Chocolat, Café, Fraise, Citron',
+    description: 'Vanille, Chocolat, Café, Fraise, Citron, Pistache, Caramel, Menthe',
     price: 6.90,
     category: 'Desserts',
     image: "/images/menu/glace-2-boules.png",
@@ -336,25 +335,30 @@ export const MENU_ITEMS: MenuItem[] = [
         { id: 'chocolat', name: 'Chocolat', category: 'glaces' },
         { id: 'cafe', name: 'Café', category: 'glaces' },
         { id: 'fraise', name: 'Fraise', category: 'glaces' },
-        { id: 'citron', name: 'Citron', category: 'glaces' }
+        { id: 'citron', name: 'Citron', category: 'glaces' },
+        { id: 'pistache', name: 'Pistache', category: 'glaces' },
+        { id: 'caramel', name: 'Caramel', category: 'glaces' },
+        { id: 'menthe', name: 'Menthe', category: 'glaces' }
       ]
     }
   },
   {
-    id: 'sorbet-3-boules',
-    name: 'Sorbet 3 Boules',
-    description: 'Fraise, Citron, Mangue, Ananas',
-    price: 7.90,
+    id: 'sorbet-2-boules',
+    name: 'Sorbet 2 Boules',
+    description: 'Fraise, Citron, Mangue, Ananas, Framboise, Pêche',
+    price: 6.90,
     category: 'Desserts',
     image: "/images/menu/sorbet-3-boules.png",
     options: {
       isComposed: true,
-      requiredSelections: 3,
+      requiredSelections: 2,
       availableChoices: [
         { id: 'fraise', name: 'Fraise', category: 'sorbets' },
         { id: 'citron', name: 'Citron', category: 'sorbets' },
         { id: 'mangue', name: 'Mangue', category: 'sorbets' },
-        { id: 'ananas', name: 'Ananas', category: 'sorbets' }
+        { id: 'ananas', name: 'Ananas', category: 'sorbets' },
+        { id: 'framboise', name: 'Framboise', category: 'sorbets' },
+        { id: 'peche', name: 'Pêche', category: 'sorbets' }
       ]
     }
   },
