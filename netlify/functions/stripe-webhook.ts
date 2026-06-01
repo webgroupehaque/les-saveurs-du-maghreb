@@ -303,6 +303,14 @@ export const handler: Handler = async (event) => {
       console.log('✅ Email restaurateur envoyé');
       await transporter.sendMail(clientEmail);
       console.log('✅ Email client envoyé');
+      // Incrément used_count si promo code utilisé
+      if (metadata.promoCode) {
+        try {
+          const { data: pc } = await supabase.from("promo_codes").select("id,used_count").ilike("code", metadata.promoCode).maybeSingle();
+          if (pc) await supabase.from("promo_codes").update({ used_count: pc.used_count + 1, updated_at: new Date().toISOString() }).eq("id", pc.id);
+        } catch (e) { console.error("Promo increment error:", e); }
+      }
+
       console.log('🎉 Commande traitée avec succès !');
     } else {
       console.log('ℹ️ Event type non géré:', stripeEvent.type);
