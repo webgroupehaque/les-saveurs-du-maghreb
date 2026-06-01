@@ -1,14 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { MENU_ITEMS, MENU_CATEGORIES } from '../constants';
 import { MenuItem } from '../types';
 import { Plus, X } from 'lucide-react';
 import { Rosette } from './ui/Rosette';
+import { useMenu } from '../hooks/useMenu';
 
 interface MenuSectionProps {
   onAddToCart: (item: MenuItem, selectedChoices?: Array<{id: string, name: string}>) => void;
 }
 
 export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
+  const { items: MENU_ITEMS, categories: MENU_CATEGORIES } = useMenu();
   const [activeCategory, setActiveCategory] = useState<string>('Tout');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
@@ -21,7 +22,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
   const filteredItems = useMemo(() => {
     if (activeCategory === 'Tout') return MENU_ITEMS;
     return MENU_ITEMS.filter(item => item.category === activeCategory);
-  }, [activeCategory]);
+  }, [activeCategory, MENU_ITEMS]);
 
   const handleItemClick = (item: MenuItem) => {
     if (item.options?.isComposed) {
@@ -36,13 +37,10 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
     if (!selectedItem?.options) return;
     
     setSelectedChoices(prev => {
-      // Si on n'a pas encore atteint le nombre requis, on peut ajouter le parfum
       if (prev.length < selectedItem.options!.requiredSelections!) {
         return [...prev, choiceId];
       }
-      // Si on a atteint le maximum, on retire le dernier de ce parfum
       else {
-        // Trouver le dernier index de ce parfum et le retirer
         const lastIndex = prev.lastIndexOf(choiceId);
         if (lastIndex !== -1) {
           return prev.filter((_, index) => index !== lastIndex);
@@ -55,7 +53,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
   const handleAddComposedItem = () => {
     if (!selectedItem || selectedChoices.length !== selectedItem.options?.requiredSelections) return;
     
-    // Créer le tableau des choix sélectionnés avec leurs noms et prix
     const selectedChoicesWithNames = selectedChoices.map(id => {
       const choice = selectedItem.options!.availableChoices!.find(c => c.id === id);
       return {
@@ -64,8 +61,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
       };
     }).filter(c => c.name !== '');
     
-    // Calculer le prix total selon les choix sélectionnés
-    // Pour glace-2-boules et sorbet-2-boules, utiliser le prix fixe de l'item
     const totalPrice = (selectedItem.id === 'glace-2-boules' || selectedItem.id === 'sorbet-2-boules')
       ? selectedItem.price
       : selectedChoices.reduce((sum, choiceId) => {
@@ -73,13 +68,11 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
           return sum + (choice?.price || 0);
         }, 0);
     
-    // Créer un item avec le prix calculé
     const itemWithPrice = {
       ...selectedItem,
       price: totalPrice
     };
     
-    // Appeler onAddToCart avec les choix sélectionnés
     onAddToCart(itemWithPrice, selectedChoicesWithNames);
     setSelectedItem(null);
     setSelectedChoices([]);
@@ -87,7 +80,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
 
   return (
     <section id="menu" className="py-24 relative bg-brand-cream text-brand-maroon overflow-hidden">
-        {/* Subtle Rosette Pattern Background - Animated & More Visible */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div className="absolute -top-64 -left-64 w-[600px] h-[600px] animate-[spin_160s_linear_infinite]">
                  <Rosette className="w-full h-full text-brand-maroon" opacity={0.08} />
@@ -99,7 +91,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
 
       <div className="container mx-auto px-6 relative z-10">
         
-        {/* Section Header */}
         <div className="flex flex-col items-center mb-16">
             <Rosette className="w-10 h-10 text-brand-maroon mb-4 animate-[spin_30s_linear_infinite]" opacity={0.8} />
             <h2 className="text-4xl md:text-5xl font-display text-brand-maroon mb-4">
@@ -108,7 +99,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
             <div className="w-24 h-px bg-gradient-to-r from-transparent via-brand-maroon to-transparent opacity-50"></div>
         </div>
 
-        {/* Filter - Refined Minimalist */}
         <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-16 overflow-x-auto pb-4">
           {categories.map((cat) => (
             <button
@@ -125,14 +115,12 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
           ))}
         </div>
 
-        {/* Menu Grid - Elegant Layout */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {filteredItems.map((item) => (
             <div 
               key={item.id} 
               className="group relative bg-white/30 hover:bg-white/60 border border-brand-maroon/10 hover:border-brand-gold/30 transition-all duration-500 rounded-lg overflow-hidden shadow-sm hover:shadow-md"
             >
-              {/* Image */}
               {item.image && (
                 <div className="relative h-48 overflow-hidden">
                   <img 
@@ -147,7 +135,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
                 </div>
               )}
 
-              {/* Content */}
               <div className="p-5">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-lg font-serif text-brand-maroon group-hover:text-brand-maroon-dark transition-colors flex-1 pr-2">
@@ -177,7 +164,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
                 </p>
 
 
-                {/* Button */}
                 <button 
                   onClick={() => handleItemClick(item)}
                   className="w-full py-2.5 bg-brand-maroon hover:bg-brand-maroon-dark text-brand-cream font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 rounded"
@@ -189,7 +175,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
           ))}
         </div>
 
-        {/* Modal for Composed Items */}
         {selectedItem && selectedItem.options?.isComposed && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedItem(null)}>
             <div className="bg-brand-cream rounded-lg max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
