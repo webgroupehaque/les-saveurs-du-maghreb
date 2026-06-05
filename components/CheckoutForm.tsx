@@ -7,7 +7,7 @@ interface CheckoutFormProps {
   subtotal: number;
   deliveryFee: number;
   total: number;
-  onSubmit: (deliveryInfo: DeliveryInfo) => void;
+  onSubmit: (deliveryInfo: DeliveryInfo, promoCode?: string) => Promise<string | void>;
 }
 
 export const CheckoutForm: React.FC<CheckoutFormProps> = ({
@@ -29,6 +29,8 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
   });
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [promoCode, setPromoCode] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Focus automatique sur le premier champ
@@ -140,7 +142,8 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
     }
     
     setIsSubmitting(true);
-    
+    setSubmitError('');
+
     try {
       const deliveryInfo: DeliveryInfo = {
         name: formData.name,
@@ -152,11 +155,16 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
         orderType: orderType,
         instructions: formData.instructions || ''
       };
-      
-      onSubmit(deliveryInfo);
+
+      const err = await onSubmit(deliveryInfo, promoCode.trim() || undefined);
+      if (err) {
+        setSubmitError(err);
+        setIsSubmitting(false);
+      }
+      // En cas de succès, la page est redirigée vers Stripe : on garde l'état de chargement.
     } catch (error) {
       console.error('Erreur lors de la soumission :', error);
-    } finally {
+      setSubmitError('Une erreur est survenue. Veuillez réessayer.');
       setIsSubmitting(false);
     }
   };
@@ -428,6 +436,22 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
           </div>
         </div>
 
+        {/* Code promo */}
+        <div>
+          <label htmlFor="promoCode" className="block text-brand-maroon font-bold text-sm mb-2">
+            Code promo (optionnel)
+          </label>
+          <input
+            type="text"
+            id="promoCode"
+            name="promoCode"
+            value={promoCode}
+            onChange={(e) => { setPromoCode(e.target.value); setSubmitError(''); }}
+            placeholder="EX : BIENVENUE10"
+            className="w-full px-4 py-3 border-2 border-brand-maroon/20 rounded-lg focus:outline-none focus:border-brand-gold transition-all uppercase"
+          />
+        </div>
+
         {/* Résumé de la commande */}
         <div className="bg-brand-maroon/5 border border-brand-gold/20 rounded-lg p-6">
           <h3 className="text-brand-maroon font-bold text-sm uppercase tracking-wider mb-4">
@@ -459,6 +483,10 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
             </div>
           </div>
         </div>
+
+        {submitError && (
+          <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-4 py-3">{submitError}</p>
+        )}
 
         {/* Bouton Submit */}
         <button

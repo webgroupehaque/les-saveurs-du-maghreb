@@ -133,14 +133,14 @@ function App() {
     }, 100);
   };
 
-  const handleOrderSubmit = async (deliveryInfo: DeliveryInfo) => {
+  const handleOrderSubmit = async (deliveryInfo: DeliveryInfo, promoCode?: string): Promise<string | void> => {
     try {
       setIsCheckingOut(true);
-      
+
       // Calculer le total final
       const finalDeliveryFee = deliveryInfo.orderType === 'delivery' ? deliveryFee : 0;
       const finalTotal = subtotal + finalDeliveryFee;
-      
+
       // Appeler la fonction Netlify pour créer la session Stripe
       const response = await fetch('/.netlify/functions/create-checkout-session', {
         method: 'POST',
@@ -153,27 +153,28 @@ function App() {
           subtotal: subtotal,
           deliveryFee: finalDeliveryFee,
           total: finalTotal,
-          restaurantId: 'saveurs-maghreb'
+          restaurantId: 'saveurs-maghreb',
+          promoCode,
         }),
       });
-      
+
       const { url, error } = await response.json();
-      
+
       if (error) {
-        throw new Error(error);
+        setIsCheckingOut(false);
+        return error;
       }
-      
       if (!url) {
-        throw new Error('Aucune URL de paiement reçue');
+        setIsCheckingOut(false);
+        return 'Aucune URL de paiement reçue';
       }
-      
+
       // Rediriger vers Stripe Checkout
       window.location.href = url;
-      
     } catch (error: any) {
       console.error('Erreur lors de la commande :', error);
-      alert('Une erreur est survenue. Veuillez réessayer.');
       setIsCheckingOut(false);
+      return 'Une erreur est survenue. Veuillez réessayer.';
     }
   };
 
