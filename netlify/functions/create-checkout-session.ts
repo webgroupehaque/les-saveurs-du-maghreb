@@ -8,6 +8,65 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!;
 
+const DELIVERY_FEE = 2.50;
+
+type Choice = { id: string; name: string; price?: number };
+type DbMenuItem = {
+  item_id: string;
+  base_price: number;
+  options: { isComposed?: boolean; availableChoices?: Choice[] } | null;
+};
+
+// Récupère le menu de référence (source de vérité = base, jamais le prix envoyé par le client)
+async function fetchMenuItems(restaurantId: string): Promise<DbMenuItem[]> {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/menu_items?restaurant_id=eq.${restaurantId}&is_available=eq.true&select=item_id,base_price,options`,
+      { headers: { apikey: SUPABASE_SERVICE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_KEY}` } },
+    );
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
+// Retrouve l'item de base d'un article du panier.
+// Pour un plat composé, l'id panier vaut `${item_id}-${choixTriés}` (cf. App.tsx addToCart).
+function resolveBaseItem(cartItemId: string, menu: DbMenuItem[]): DbMenuItem | null {
+  const direct = menu.find((m) => m.item_id === cartItemId);
+  if (direct) return direct;
+  const prefixed = menu
+    .filter((m) => cartItemId.startsWith(`${m.item_id}-`))
+    .sort((a, b) => b.item_id.length - a.item_id.length);
+  return prefixed[0] ?? null;
+}
+
+// Recalcule le prix unitaire côté serveur, à l'identique du frontend (MenuSection.handleAddComposedItem) :
+// - base_price > 0  → prix fixe (plats simples, glaces/sorbets)
+// - base_price == 0 → somme des prix des choix sélectionnés
+// Retourne null si l'article ou un choix est inconnu (→ commande rejetée).
+function serverUnitPrice(
+  cartItem: { id: string; options?: { selectedChoices?: Choice[] } },
+  menu: DbMenuItem[],
+): number | null {
+  const base = resolveBaseItem(cartItem.id, menu);
+  if (!base) return null;
+  const basePrice = Number(base.base_price);
+  if (basePrice > 0) return basePrice;
+
+  const choices = cartItem.options?.selectedChoices;
+  if (!choices || choices.length === 0) return null;
+  const available = base.options?.availableChoices ?? [];
+  let sum = 0;
+  for (const ch of choices) {
+    const def = available.find((c) => c.id === ch.id);
+    if (!def) return null;
+    sum += Number(def.price || 0);
+  }
+  return sum;
+}
+
 async function validatePromoCode(
   code: string,
   restaurantId: string,
@@ -44,36 +103,71 @@ export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
   try {
-    const { cartItems, deliveryInfo, subtotal, deliveryFee, total, restaurantId, promoCode } = JSON.parse(event.body || '{}');
+    const { cartItems, deliveryInfo, restaurantId, promoCode } = JSON.parse(event.body || '{}');
+    const resolvedRestaurantId = restaurantId || 'saveurs-maghreb';
 
-    const lineItems: any[] = cartItems.map((item: any) => ({
-      price_data: {
-        currency: 'eur',
-        product_data: {
-          name: item.name,
-          description: item.options?.selectedChoices ? item.options.selectedChoices.map((c: any) => c.name).join(', ') : undefined,
-          metadata: {
-            itemId: item.id,
-            category: item.category || '',
-            choices: item.options?.selectedChoices ? JSON.stringify(item.options.selectedChoices) : ''
-          }
-        },
-        unit_amount: Math.round(item.price * 100),
-      },
-      quantity: item.quantity,
-    }));
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Panier vide' }) };
+    }
 
-    if (deliveryFee > 0) {
+    // Source de vérité des prix : la base. Si elle est joignable et non vide, on valide
+    // strictement ; en cas de panne Supabase on retombe sur le prix client pour ne pas
+    // bloquer le service (le fetch est côté serveur, le client ne peut pas le forcer à échouer).
+    const menu = await fetchMenuItems(resolvedRestaurantId);
+    const useServerPricing = menu.length > 0;
+
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+    let serverSubtotal = 0;
+
+    for (const item of cartItems) {
+      let unitPrice: number;
+      if (useServerPricing) {
+        const computed = serverUnitPrice(item, menu);
+        if (computed == null) {
+          return { statusCode: 400, body: JSON.stringify({ error: `Produit invalide: ${item.name || item.id}` }) };
+        }
+        unitPrice = computed;
+      } else {
+        unitPrice = Number(item.price) || 0;
+      }
+
+      const quantity = Math.max(1, Math.floor(Number(item.quantity) || 1));
+      serverSubtotal += unitPrice * quantity;
+
       lineItems.push({
-        price_data: { currency: 'eur', product_data: { name: 'Frais de livraison' }, unit_amount: Math.round(deliveryFee * 100) },
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: item.name,
+            description: item.options?.selectedChoices
+              ? item.options.selectedChoices.map((c: Choice) => c.name).join(', ')
+              : undefined,
+            metadata: {
+              itemId: item.id,
+              category: item.category || '',
+              choices: item.options?.selectedChoices ? JSON.stringify(item.options.selectedChoices) : '',
+            },
+          },
+          unit_amount: Math.round(unitPrice * 100),
+        },
+        quantity,
+      });
+    }
+
+    const serverDeliveryFee = deliveryInfo.orderType === 'delivery' ? DELIVERY_FEE : 0;
+    if (serverDeliveryFee > 0) {
+      lineItems.push({
+        price_data: { currency: 'eur', product_data: { name: 'Frais de livraison' }, unit_amount: Math.round(serverDeliveryFee * 100) },
         quantity: 1,
       });
     }
 
+    const serverTotal = serverSubtotal + serverDeliveryFee;
+
     let validatedPromoCode: string | null = null;
     let discountCents = 0;
     if (promoCode && typeof promoCode === 'string' && promoCode.trim()) {
-      const result = await validatePromoCode(promoCode.trim(), restaurantId || 'saveurs-maghreb', Number(subtotal));
+      const result = await validatePromoCode(promoCode.trim(), resolvedRestaurantId, serverSubtotal);
       if (!result.valid) return { statusCode: 400, body: JSON.stringify({ error: result.error }) };
       validatedPromoCode = result.codeNormalized;
       discountCents = result.discountCents;
@@ -89,7 +183,7 @@ export const handler: Handler = async (event) => {
       cancel_url: `${event.headers.origin || 'https://saveurs-maghreb.netlify.app'}/?canceled=true`,
       customer_email: deliveryInfo.email,
       metadata: {
-        restaurantId: restaurantId || 'saveurs-maghreb',
+        restaurantId: resolvedRestaurantId,
         customerName: deliveryInfo.name.substring(0, 100),
         customerPhone: deliveryInfo.phone.substring(0, 50),
         customerEmail: deliveryInfo.email.substring(0, 100),
@@ -99,9 +193,9 @@ export const handler: Handler = async (event) => {
         orderType: deliveryInfo.orderType,
         instructions: truncatedInstructions,
         itemsCount: cartItems.length.toString(),
-        subtotal: subtotal.toFixed(2),
-        deliveryFee: deliveryFee.toFixed(2),
-        totalAmount: total.toFixed(2),
+        subtotal: serverSubtotal.toFixed(2),
+        deliveryFee: serverDeliveryFee.toFixed(2),
+        totalAmount: serverTotal.toFixed(2),
         promoCode: validatedPromoCode ?? '',
       },
     };
