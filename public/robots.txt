@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://saveurs-maghreb.netlify.app/sitemap.xml
+Sitemap: https://saveurdumaghreb.fr/sitemap.xml

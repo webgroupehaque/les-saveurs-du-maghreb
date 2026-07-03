@@ -7,34 +7,34 @@
     <meta name="description" content="Les Saveurs du Maghreb, restaurant maghrébin au 21 rue des Maréchaux à Nancy. Couscous royal, tajines traditionnels, grillades maison — sur place, à emporter ou en livraison." />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#4A0E15" />
-    <link rel="canonical" href="https://saveurs-maghreb.netlify.app/" />
+    <link rel="canonical" href="https://saveurdumaghreb.fr/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Les Saveurs du Maghreb" />
     <meta property="og:locale" content="fr_FR" />
-    <meta property="og:url" content="https://saveurs-maghreb.netlify.app/" />
+    <meta property="og:url" content="https://saveurdumaghreb.fr/" />
     <meta property="og:title" content="Les Saveurs du Maghreb — Restaurant Maghrébin à Nancy" />
     <meta property="og:description" content="Couscous royal, tajines traditionnels, grillades maison. Recettes authentiques du Maghreb à Nancy — sur place, à emporter ou en livraison." />
-    <meta property="og:image" content="https://saveurs-maghreb.netlify.app/images/accueil.png" />
+    <meta property="og:image" content="https://saveurdumaghreb.fr/images/accueil.png" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Les Saveurs du Maghreb — Restaurant Maghrébin à Nancy" />
     <meta name="twitter:description" content="Couscous royal, tajines traditionnels, grillades maison. Recettes authentiques du Maghreb à Nancy — sur place, à emporter ou en livraison." />
-    <meta name="twitter:image" content="https://saveurs-maghreb.netlify.app/images/accueil.png" />
+    <meta name="twitter:image" content="https://saveurdumaghreb.fr/images/accueil.png" />
 
     <!-- Données structurées Schema.org -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Restaurant",
-      "@id": "https://saveurs-maghreb.netlify.app/#restaurant",
+      "@id": "https://saveurdumaghreb.fr/#restaurant",
       "name": "Les Saveurs du Maghreb",
       "description": "Restaurant maghrébin à Nancy : couscous royal, tajines traditionnels, grillades maison. Sur place, à emporter ou en livraison.",
-      "url": "https://saveurs-maghreb.netlify.app/",
-      "image": "https://saveurs-maghreb.netlify.app/images/accueil.png",
+      "url": "https://saveurdumaghreb.fr/",
+      "image": "https://saveurdumaghreb.fr/images/accueil.png",
       "telephone": "+33383321030",
       "email": "lessaveursdumaghreb16@gmail.com",
       "servesCuisine": ["Maghrébine", "Marocaine", "Algérienne", "Tunisienne"],
@@ -174,9 +174,53 @@
 }
 </script>
 <link rel="stylesheet" href="/index.css">
+
+    <!-- Google Analytics 4 — chargé uniquement après consentement (RGPD/CNIL) -->
+    <script>
+      (function () {
+        var GA_ID = 'G-PBSLPB6BPW';
+        window.__loadGA = function () {
+          if (window.__gaLoaded) return;
+          window.__gaLoaded = true;
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+          document.head.appendChild(s);
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { dataLayer.push(arguments); };
+          gtag('js', new Date());
+          gtag('config', GA_ID, { anonymize_ip: true });
+        };
+        try {
+          if (localStorage.getItem('cookie-consent') === 'granted') window.__loadGA();
+        } catch (e) {}
+      })();
+    </script>
 </head>
   <body>
     <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
+    <!-- Bandeau cookies — consentement Google Analytics -->
+    <div id="cookie-banner" style="display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;max-width:680px;margin:0 auto;background:#4A0E15;color:#F5E6D3;border:1px solid #C5A059;border-radius:14px;padding:14px 18px;font-family:Lato,system-ui,sans-serif;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.45);flex-wrap:wrap;align-items:center;gap:10px">
+      <span style="flex:1 1 240px;line-height:1.45">Nous utilisons Google Analytics pour mesurer l’audience du site. Acceptez-vous ces cookies ?</span>
+      <span style="display:flex;gap:8px;margin-left:auto">
+        <button id="cookie-refuse" type="button" style="background:transparent;color:#F5E6D3;border:1px solid #F5E6D3;border-radius:999px;padding:8px 16px;cursor:pointer;font-size:13px">Refuser</button>
+        <button id="cookie-accept" type="button" style="background:#C5A059;color:#4A0E15;border:none;border-radius:999px;padding:8px 18px;font-weight:700;cursor:pointer;font-size:13px">Accepter</button>
+      </span>
+    </div>
+    <script>
+      (function () {
+        try { if (localStorage.getItem('cookie-consent')) return; } catch (e) { return; }
+        var b = document.getElementById('cookie-banner');
+        b.style.display = 'flex';
+        document.getElementById('cookie-accept').onclick = function () {
+          localStorage.setItem('cookie-consent', 'granted'); b.remove(); window.__loadGA();
+        };
+        document.getElementById('cookie-refuse').onclick = function () {
+          localStorage.setItem('cookie-consent', 'denied'); b.remove();
+        };
+      })();
+    </script>
+
 </body>
 </html>
