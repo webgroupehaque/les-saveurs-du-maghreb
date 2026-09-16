@@ -1,0 +1,20 @@
+[
+  { "key": "hero.eyebrow", "label": "Surtitre", "type": "text", "group": "Accueil", "default": "Restaurant Maghrébin" },
+  { "key": "hero.line1", "label": "Titre, ligne 1 (crème)", "type": "text", "group": "Accueil", "default": "Les Saveurs" },
+  { "key": "hero.line2", "label": "Titre, ligne 2 (dorée)", "type": "text", "group": "Accueil", "default": "du Maghreb" },
+  { "key": "hero.slogan", "label": "Slogan", "type": "text", "group": "Accueil", "default": "Savourez l'authenticité du Maghreb" },
+  { "key": "hero.subline", "label": "Ligne sous le slogan", "type": "text", "group": "Accueil", "default": "Restaurant Maghrébin - Spécialités Couscous & Tajines" },
+  { "key": "hero.image", "label": "Photo d'accueil (arche)", "type": "image", "group": "Accueil", "default": "/images/accueil.png", "help": "Format portrait 4:5." },
+
+  { "key": "about.description", "label": "Texte À propos", "type": "textarea", "group": "À propos", "default": "Découvrez les saveurs authentiques du Maghreb dans une ambiance chaleureuse. Nos couscous et tajines sont préparés selon les recettes traditionnelles, avec des ingrédients frais et des épices sélectionnées." },
+  { "key": "about.specialties", "label": "Nos spécialités", "type": "list", "group": "À propos", "default": ["Couscous Royal", "Tajines traditionnels", "Grillades maison"] },
+  { "key": "about.services", "label": "Services", "type": "list", "group": "À propos", "default": ["Sur place", "À emporter", "Livraison"] },
+  { "key": "hours.detail", "label": "Note sous les horaires", "type": "text", "group": "À propos", "default": "Horaires variables selon les jours" },
+
+  { "key": "contact.intro", "label": "Texte d'introduction", "type": "textarea", "group": "Contact", "default": "Nous sommes à votre disposition pour toute question ou réservation" },
+
+  { "key": "footer.type", "label": "Sous-titre du pied de page", "type": "text", "group": "Pied de page", "default": "Restaurant Maghrébin" },
+  { "key": "socials.facebook", "label": "Page Facebook", "type": "url", "group": "Réseaux" },
+  { "key": "socials.instagram", "label": "Instagram", "type": "url", "group": "Réseaux" },
+  { "key": "socials.google", "label": "Fiche Google (avis)", "type": "url", "group": "Réseaux" }
+]

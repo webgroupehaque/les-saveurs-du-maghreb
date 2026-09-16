@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "manifest:push": "node scripts/push-manifest.mjs"
   },
   "dependencies": {
     "react": "^19.2.3",
@@ -22,6 +24,8 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
     "@types/nodemailer": "^6.4.14",
-    "@netlify/functions": "^2.4.0"
+    "@netlify/functions": "^2.4.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3"
   }
 }
