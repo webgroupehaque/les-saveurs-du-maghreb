@@ -10,6 +10,7 @@ import { CartSidebar } from './components/CartSidebar';
 import { Announcement } from './components/Announcement';
 import { PaymentResult } from './components/PaymentResult';
 import { ContentProvider } from './lib/content';
+import { Legal, docFromPath, type Doc } from './components/Legal';
 
 /** Le panier n'existe que si la commande est activée dans le CMS. */
 const Ordering: React.FC = () => {
@@ -19,6 +20,8 @@ const Ordering: React.FC = () => {
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');
+  // Pages légales : elles remplacent le contenu quand l'adresse le demande.
+  const [legal, setLegal] = useState<Doc | null>(docFromPath());
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
@@ -32,6 +35,9 @@ function App() {
           <Announcement />
           <Navbar activeSection={activeSection} onNavigate={scrollToSection} />
 
+          {legal ? (
+            <Legal doc={legal} onClose={() => setLegal(null)} />
+          ) : (
           <main>
             <Hero onOrderClick={() => scrollToSection('menu')} />
 
@@ -59,8 +65,9 @@ function App() {
 
             <ContactSection />
           </main>
+          )}
 
-          <Footer />
+          <Footer onLegal={(d: Doc) => { setLegal(d); window.scrollTo({ top: 0 }); }} />
           <Ordering />
           <PaymentResult />
         </div>

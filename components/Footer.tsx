@@ -4,7 +4,7 @@ import { useCart } from '@kit';
 import { APP_NAME } from '../types';
 import { useSiteContent } from '../lib/content';
 
-export const Footer: React.FC = () => {
+export const Footer: React.FC<{ onLegal: (doc: 'mentions' | 'confidentialite' | 'cgv') => void }> = ({ onLegal }) => {
   const { settings } = useCart();
   const { c } = useSiteContent();
   const facebook = c('socials.facebook');
@@ -61,6 +61,18 @@ export const Footer: React.FC = () => {
         </div>
         <div className="border-t border-brand-gold/10 pt-8 text-center text-brand-cream/40 text-sm">
           <p>&copy; {new Date().getFullYear()} {APP_NAME} - Tous droits réservés{settings.legalCompany ? ` · ${settings.legalCompany}` : ''}{settings.legalSiret ? ` · SIRET ${settings.legalSiret}` : ''}</p>
+          <nav className="flex flex-wrap justify-center gap-4 text-xs mt-3">
+            {([['Mentions légales', '/mentions-legales', 'mentions'], ['Confidentialité', '/confidentialite', 'confidentialite'], ['Conditions de vente', '/cgv', 'cgv']] as [string, string, 'mentions' | 'confidentialite' | 'cgv'][]).map(([libelle, chemin, doc]) => (
+              <a
+                key={chemin}
+                href={chemin}
+                onClick={(e) => { e.preventDefault(); window.history.pushState(null, '', chemin); onLegal(doc); }}
+                className="hover:text-brand-gold"
+              >
+                {libelle}
+              </a>
+            ))}
+          </nav>
           <p className="text-xs mt-2">Site réalisé par <a href="https://rekvo.agency" target="_blank" rel="noreferrer" className="hover:text-brand-gold">Rekvo</a></p>
         </div>
       </div>
